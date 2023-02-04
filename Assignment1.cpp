@@ -6,9 +6,12 @@
 #include <cmath>
 
 using namespace std;
-
 double sum(const vector<double> &v) {
-    return accumulate(v.begin(), v.end(), 0.0);
+    double result = 0;
+    for (int i = 0; i < v.size(); i++) {
+        result += v[i];
+    }
+    return result;
 }
 
 double mean(const vector<double> &v) {
@@ -25,8 +28,17 @@ double median(vector<double> v) {
 }
 
 double range(const vector<double> &v) {
-    auto result = minmax_element(v.begin(), v.end());
-    return *result.second - *result.first;
+    double minVal = v[0];
+    double maxVal = v[0];
+    for (int i = 1; i < v.size(); i++) {
+        if (v[i] < minVal) {
+            minVal = v[i];
+        }
+        if (v[i] > maxVal) {
+            maxVal = v[i];
+        }
+    }
+    return maxVal - minVal;
 }
 
 void print_stats(const vector<double> &v) {
@@ -35,6 +47,7 @@ void print_stats(const vector<double> &v) {
     cout << "Median: " << median(v) << endl;
     cout << "Range: " << range(v) << endl;
 }
+
 double covar(const vector<double> &v1, const vector<double> &v2) {
     double m1 = mean(v1), m2 = mean(v2);
     double covariance = 0;
@@ -56,8 +69,6 @@ double var(const vector<double> &v) {
 double cor(const vector<double> &v1, const vector<double> &v2) {
     return covar(v1, v2) / sqrt(var(v1) * var(v2));
 }
-
-
 
 
 int main(int argc, char** argv){
