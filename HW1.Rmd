@@ -1,0 +1,166 @@
+---
+title: "R Notebook"
+author: "Jaechul Kim"
+output: html_notebook
+date: 2023-02-17
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+# Linear regression is a statistical method that is used to establish a relationship between a dependent variable and one or more independent variables.
+
+required library
+```{r}
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("psych")
+library(ggplot2)
+library(dplyr)
+```
+
+read file and make train and test data
+```{r}
+# Set the working directory to the folder where the CSV file is located
+setwd("C:\\Users\\leewq\\Downloads\\archive")
+
+
+# Read the CSV file into a data frame
+df <- read.csv("CustomerInfo.csv")
+
+# Remove rows with missing values
+df <- na.omit(df)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Determine row indices for training and testing sets
+train_indices <- sample(1:nrow(df), 0.8*nrow(df), replace = FALSE)
+test_indices <- setdiff(1:nrow(df), train_indices)
+
+# Create training and testing sets
+train <- df[train_indices, ]
+test <- df[test_indices, ]
+
+
+
+
+```
+
+
+
+graph
+The first plot is a scatter plot that shows the relationship between the index (x-axis) and the hourly demand of energy (y-axis). The second plot is a histogram that shows the distribution of the hourly demand of energy.
+```{r}
+
+# Create scatter plot of predictor against target variable
+ggplot(train, aes(x = income, y = claim_amount)) + 
+  geom_point() + 
+  xlab("income") + 
+  ylab("claim_amount")
+
+# Create histogram of target variable
+ggplot(train, aes(x = claim_amount)) + 
+  geom_histogram() + 
+  xlab("claim_amount") + 
+  ylab("Frequency")
+
+```
+
+build simple linear regression model
+```{r}
+# loading psych package
+library(psych)
+psych::describe(train)
+summary(train)
+# Taining model
+lmModel <- lm(vintage ~   . , data = train)
+summary(lmModel)
+
+
+```
+
+plot residuals
+```{r}
+
+# Plot the residuals
+ggplot(train, aes(x = predict(lmModel), y = residuals(lmModel))) +
+  geom_point() +
+  xlab("Predicted values") +
+  ylab("Residuals")
+
+```
+
+multiple predictors and residual plot
+```{r}
+lmModel1 <- lm(claim_amount ~ income + gender, data = train)
+summary(lmModel1)
+plot(lmModel1, which = c(1, 2, 5))
+
+
+```
+
+Third Linear regression
+```{r}
+lmModel3 <- lm(claim_amount ~ vintage + I(vintage^2), data = train)
+
+
+# Output summary of the model
+summary(lmModel3)
+
+# Plot residuals
+plot(lmModel3, which = c(1, 2, 3))
+
+```
+
+# we can see that three linear regression models have been built to predict the claim amount. The first model has only one predictor variable, vintage, while the second model has two predictor variables, income and gender. The third model also has two predictor variables, vintage and the squared term of vintage.To compare the models, we can look at their respective R-squared values, residual standard errors, and p-values. The first model has an R-squared value of 0.005327 and a residual standard error of 3265, while the second model has an R-squared value of 0.0002709 and a residual standard error of 3292. The third model has an R-squared value of 0.0002458 and a residual standard error of 3293.Compared to the second and third models, the first model has a higher R-squared value and a lower residual standard error, indicating that it provides a better fit to the data. However, we cannot definitively conclude that the first model is the best model without further analysis. 
+
+```{r}
+# Model 1: Simple Linear Regression
+# Predict on test data
+pred1 <- predict(lmModel, newdata = test)
+
+# Calculate correlation and MSE
+cor1 <- cor(pred1, test$vintage)
+mse1 <- mean((pred1 - test$vintage)^2)
+
+# Model 2: Multiple Linear Regression
+# Predict on test data
+pred2 <- predict(lmModel1, newdata = test)
+
+# Calculate correlation and MSE
+cor2 <- cor(pred2, test$claim_amount)
+mse2 <- mean((pred2 - test$claim_amount)^2)
+
+# Model 3: Polynomial Regression
+# Predict on test data
+pred3 <- predict(lmModel3, newdata = test)
+
+# Calculate correlation and MSE
+cor3 <- cor(pred3, test$claim_amount)
+mse3 <- mean((pred3 - test$claim_amount)^2)
+
+# Print the results
+cat("Model 1 - Simple Linear Regression\n")
+cat("Correlation: ", cor1, "\n")
+cat("MSE: ", mse1, "\n\n")
+
+cat("Model 2 - Multiple Linear Regression\n")
+cat("Correlation: ", cor2, "\n")
+cat("MSE: ", mse2, "\n\n")
+
+cat("Model 3 - Polynomial Regression\n")
+cat("Correlation: ", cor3, "\n")
+cat("MSE: ", mse3, "\n")
+
+```
+# Based on the results, it appears that Model 2 (Multiple Linear Regression) performed the best, with the highest correlation and lowest MSE. IT was not as my expectation, I thought Model 1 will perform the best. 
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

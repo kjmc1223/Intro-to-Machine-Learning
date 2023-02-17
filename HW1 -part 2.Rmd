@@ -1,0 +1,159 @@
+---
+title: "R Notebook"
+author: "Jaechul Kim"
+output: html_notebook
+date: 2023-02-17
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+# Linear models for classification are a type of machine learning algorithm that are used to predict the class of a new observation based on a set of input features. 
+
+required library
+```{r}
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("psych")
+install.packages("e1071")
+
+library(ggplot2)
+library(dplyr)
+```
+
+
+
+read file and make train and test data
+```{r}
+# Set the working directory to the folder where the CSV file is located
+setwd("C:\\Users\\leewq\\Downloads\\archive")
+
+
+# Read the CSV file into a data frame
+df <- read.csv("hotel_bookings.csv")
+
+# Remove rows with missing values
+df <- na.omit(df)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Determine row indices for training and testing sets
+train_indices <- sample(1:nrow(df), 0.8*nrow(df), replace = FALSE)
+test_indices <- setdiff(1:nrow(df), train_indices)
+
+# Create training and testing sets
+train <- df[train_indices, ]
+test <- df[test_indices, ]
+
+
+
+
+```
+
+#. Use at least 5 R functions for data exploration, using the training data
+
+```{r}
+
+summary(train)
+str(train)
+table(train$gender)
+hist(train$lead_time)
+
+
+numerical_vars <- train %>% select(lead_time, total_of_special_requests,stays_in_week_nights)
+
+
+cor(numerical_vars)
+
+
+
+
+```
+
+#Create at least 2 informative graphs, using the training data
+```{r}
+ggplot(train, aes(x=hotel, y=adr, fill=hotel)) +
+  geom_boxplot() +
+  labs(x="Hotel Type", y="Daily Rate", title="Box Plot of Daily Rate by Hotel Type") +
+  theme_minimal()
+
+ggplot(train, aes(x = lead_time)) + 
+  geom_histogram(binwidth = 50, fill = "#69b3a2", color = "#e9ecef", alpha = 0.9) +
+  xlab("Lead Time (days)") +
+  ylab("Count") +
+  ggtitle("Distribution of Lead Time") +
+  theme_bw()
+
+```
+
+
+#Build a logistic regression model and output the summary. Write a thorough explanation of the information in the model summary
+
+```{r}
+# fit logistic regression model
+logistic_model <- glm(is_canceled ~ lead_time + stays_in_weekend_nights + stays_in_week_nights , data = train, family = "binomial")
+
+# output model summary
+summary(logistic_model)
+
+
+```
+# Using these two classification models models, predict and evaluate on the test data using all of the classification metrics discussed in class. Compare the results and indicate why you think these results happened.
+```{r}
+# predict using logistic regression model
+logistic_pred <- predict(logistic_model, newdata = test, type = "response")
+logistic_pred_class <- ifelse(logistic_pred > 0.5, 1, 0)
+
+library(e1071)
+
+# Fit the Naive Bayes model
+naivebayes_model <- naiveBayes(is_canceled ~ lead_time + stays_in_weekend_nights + stays_in_week_nights , data = train)
+
+# Print the model summary
+summary(naivebayes_model)
+
+# predict using naive Bayes model
+naivebayes_pred <- predict(naivebayes_model, newdata = test)
+naivebayes_pred_class <- ifelse(naivebayes_pred == "canceled", 1, 0)
+# Logistic Regression
+logistic_pred <- predict(logistic_model, newdata = test, type = "response")
+logistic_pred <- ifelse(logistic_pred > 0.5, 1, 0)
+logistic_accuracy <- mean(logistic_pred == test$is_canceled)
+logistic_precision <- sum(logistic_pred & test$is_canceled) / sum(logistic_pred)
+logistic_recall <- sum(logistic_pred & test$is_canceled) / sum(test$is_canceled)
+logistic_f1 <- 2 * (logistic_precision * logistic_recall) / (logistic_precision + logistic_recall)
+
+# Naive Bayes
+naivebayes_pred <- predict(naivebayes_model, newdata = test)
+naivebayes_accuracy <- mean(naivebayes_pred == test$is_canceled)
+naivebayes_table <- table(naivebayes_pred, test$is_canceled)
+if ("0" %in% rownames(naivebayes_table)) {
+  naivebayes_precision <- naivebayes_table[2,2] / sum(naivebayes_table[2,])
+  naivebayes_recall <- naivebayes_table[2,2] / sum(naivebayes_table[,2])
+  naivebayes_f1 <- 2 * (naivebayes_precision * naivebayes_recall) / (naivebayes_precision + naivebayes_recall)
+} else {
+  naivebayes_precision <- 0
+  naivebayes_recall <- 0
+  naivebayes_f1 <- 0
+}
+
+# Output results
+cat(sprintf("Logistic Regression:\nAccuracy: %.3f\nPrecision: %.3f\nRecall: %.3f\nF1 Score: %.3f\n\n", 
+            logistic_accuracy, logistic_precision, logistic_recall, logistic_f1))
+cat(sprintf("Naive Bayes:\nAccuracy: %.3f\nPrecision: %.3f\nRecall: %.3f\nF1 Score: %.3f\n", 
+            naivebayes_accuracy, naivebayes_precision, naivebayes_recall, naivebayes_f1))
+
+
+
+```
+
+#Write a paragraph listing the strengths and weaknesses of Naïve Bayes and Logistic Regression. 
+
+#Naive Bayes is stronger when there is less data and Logistic Regression is stronger when there is bigger data. Its because Logistic Regression is linear but Naive Bayes is log.
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
