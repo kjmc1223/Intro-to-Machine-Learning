@@ -16,3 +16,6 @@ HW_Linear_Models can be found [here](HW_Linear_Models.pdf)
 
 HW_Linear_Models_2 - Linear Model part 2
 HW_Linear_Models_2 can be found [here](HW_Linear_Models_2.pdf)
+
+HW_Similarity_and_Ensemble - Part 4
+HW_Similarity_and_Ensemble can be found [here](Part_4.pdf)
