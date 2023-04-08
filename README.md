@@ -19,3 +19,6 @@ HW_Linear_Models_2 can be found [here](HW_Linear_Models_2.pdf)
 
 HW_Similarity_and_Ensemble - Part 4
 HW_Similarity_and_Ensemble can be found [here](Part_4.pdf)
+
+ML_with_sklearn - Assignment (Use Auto.csv)
+ML_with_sklearn can be found [here](ML_with_sklearn.pdf)
