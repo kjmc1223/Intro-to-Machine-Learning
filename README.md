@@ -22,3 +22,6 @@ HW_Similarity_and_Ensemble can be found [here](Part_4.pdf)
 
 ML_with_sklearn - Assignment (Use Auto.csv)
 ML_with_sklearn can be found [here](ML_with_sklearn.pdf)
+
+image_classification - Assignment (Use Archive (1).zip)
+image_classification_HW can be found [here](image_classification_HW.pdf)
