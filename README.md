@@ -25,3 +25,9 @@ ML_with_sklearn can be found [here](ML_with_sklearn.pdf)
 
 image_classification - Assignment (Use Archive (1).zip)
 image_classification_HW can be found [here](image_classification_HW.pdf)
+
+
+Summary
+I am a highly motivated individual with a strong background in machine learning, data analysis, and programming. My passion for machine learning has led me to complete a diverse set of projects, showcasing my skills in different areas such as linear models, image classification, and predictive modeling. I am always looking for new opportunities to expand my knowledge and stay current with the rapidly evolving field of machine learning. In addition to my technical skills, I possess essential soft skills such as communication, time management, and teamwork that make me a valuable team player.
+
+In the future, I plan to continue working on personal projects to further refine my expertise in machine learning and explore new techniques and technologies. I am committed to lifelong learning and staying updated with the latest advancements in the field. I am eager to contribute my skills and knowledge to potential employment opportunities, where I can collaborate with a team of like-minded professionals to create innovative solutions and make a meaningful impact.
